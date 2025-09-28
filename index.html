@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" sizes="32x32" href="./css/styles.css">
+    <title>CATCH THE FLOYD!</title>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="scoreDisplay">Score: 0</div>
+        <div id="livesDisplay">Lives: 3</div>
+        
+        <div id="startScreen" class="screen">
+            <h1>CATCH THE FLOYD</h1>
+            <p>Collect the fried chickens to earn points, but avoid the cops!<br>
+            Use LEFT and RIGHT keys or the on-screen buttons to move.</p>
+            <button id="startBtn" class="btn">START GAME</button>
+        </div>
+        
+        <div id="gameOverScreen" class="screen" style="display: none;">
+            <h2>GAME OVER</h2>
+            <p id="finalScore">Your score: 0</p>
+            <button id="restartBtn" class="btn">PLAY AGAIN</button>
+        </div>
+        
+        <div class="mobile-controls">
+            <div class="mobile-btn" id="leftBtn">←</div>
+            <div class="mobile-btn" id="rightBtn">→</div>
+        </div>
+    </div>
+
+    <script src="./scripts/main.js"></script>
+</body>
+</html>
