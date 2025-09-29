@@ -27,6 +27,9 @@ let itemSpawnTimer = 0;
 const itemSpawnInterval = 120; // frames
 
 
+let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+
 function unlockAudio() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
     // 0.1 s silence just to consume the gesture
@@ -55,29 +58,37 @@ function loadAudio(src) {
             .then(buf => audioCtx.decodeAudioData(buf));
     }
 
-let audioCtx, bgBuffer, loseBuffer, bgSource = null;
+let bgBuffer, loseBuffer, bgSource = null;
 
-// 2.  Wrap only the *initialisation* part in an async IIFE:
-(async () => {
-    const [playerImg, goodItemImg, badItemImg] = await Promise.all([
-        loadImage('./assets/images/base.png'),
-        loadImage('./assets/images/chicken.png'),
-        loadImage('./assets/images/cop.png')
-    ]);
+/* ----------  LAZY ASSET LOADER  ---------- */
+let assetsReady = null;                       // Promise once we start
+const loadingScreen = document.getElementById('loadingScreen');
 
-    // --- declare the images globally so the rest of the file can see them ---
-    window.playerImg   = playerImg;
-    window.goodItemImg = goodItemImg;
-    window.badItemImg  = badItemImg;
+function loadAllAssets() {
+    if (assetsReady) return assetsReady;
+    loadingScreen.style.display = 'flex';
 
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        [bgBuffer, loseBuffer] = await Promise.all([
+    assetsReady = (async () => {
+        const [playerImg, goodItemImg, badItemImg] = await Promise.all([
+            loadImage('./assets/images/base.png'),
+            loadImage('./assets/images/chicken.png'),
+            loadImage('./assets/images/cop.png')
+        ]);
+        window.playerImg   = playerImg;
+        window.goodItemImg = goodItemImg;
+        window.badItemImg  = badItemImg;
+
+        const [bg, lose] = await Promise.all([
             loadAudio('./assets/sfx/background.mp3'),
             loadAudio('./assets/sfx/game_over.mp3')
         ]);
+        bgBuffer   = bg;
+        loseBuffer = lose;
 
-    
-})();
+        loadingScreen.style.display = 'none';
+    })();
+    return assetsReady;
+}
 
 function startBackground() {
     if (bgSource) return;                 // already running
@@ -229,7 +240,10 @@ function gameLoop() {
     }
     
     // Draw player
-    ctx.drawImage(playerImg, playerX, canvas.height - playerHeight - 10, playerWidth, playerHeight);
+    if (window.playerImg) {
+    ctx.drawImage(playerImg, playerX, canvas.height - playerHeight - 10,
+                  playerWidth, playerHeight);
+    }
     
     // Spawn items
     itemSpawnTimer++;
@@ -281,12 +295,30 @@ function gameLoop() {
 }
 
 // Event listeners for buttons
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
     unlockAudio();
+    await loadAllAssets();
     startBackground();
     startGame();
 });
 restartBtn.addEventListener('click', () => {
     startBackground();
     startGame();
+});
+
+/* ----------  PAUSE / RESUME ON TAB SWITCH  ---------- */
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {          // user left
+        gameActive = false;         // stop game loop
+        if (bgSource) {             // stop music
+            bgSource.stop();
+            bgSource = null;
+        }
+    } else {                        // user came back
+        if (bgBuffer && !bgSource) startBackground(); // resume music
+        if (lives > 0 && !gameActive) {               // resume game
+            gameActive = true;
+            requestAnimationFrame(gameLoop);
+        }
+    }
 });
