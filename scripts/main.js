@@ -17,8 +17,8 @@ let score = 0;
 let lives = 3;
 let playerX = canvas.width / 2;
 const playerSpeed = 7;
-const playerWidth = 120;
-const playerHeight = 80;
+const playerWidth = 60.75;
+const playerHeight = 93.5;
 
 // Items array
 let items = [];
@@ -106,8 +106,8 @@ class Item {
         this.x = x;
         this.y = y;
         this.isGood = isGood;
-        this.width  = isGood ? 40 : 200;   // good = 40×40, bad = 60×60
-        this.height = isGood ? 40 : 120;
+        this.width  = isGood ? 40 : 75.5;   // good = 40×40, bad = 60×60
+        this.height = isGood ? 40 : 150.5;
         this.speed = 2;
         this.image = isGood ? goodItemImg : badItemImg;
     }
