@@ -30,6 +30,26 @@ const itemSize = 40;
 let itemSpawnTimer = 0;
 const itemSpawnInterval = 120; // frames
 
+/* ----------  RESPONSIVE CANVAS SIZE  ---------- */
+function resizeCanvas() {
+    // pick the size you want to fill (here: #gameContainer)
+    const container = canvas.parentElement;
+    const cssW = container.clientWidth;
+    const cssH = container.clientHeight;
+
+    // only change resolution if size really changed
+    if (canvas.width  !== cssW || canvas.height !== cssH) {
+        canvas.width  = cssW;   // logical pixels
+        canvas.height = cssH;   // logical pixels
+        if (gameActive) gameLoop(); // redraw one frame immediately
+    }
+}
+
+/* first set ... */
+resizeCanvas();
+/* ... and keep it synced */
+window.addEventListener('resize', resizeCanvas);
+
 
 let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
