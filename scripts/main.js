@@ -1,3 +1,7 @@
+function canvasScale() {
+    return canvas.clientWidth / canvas.width;
+}
+
 // Game variables
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -213,6 +217,10 @@ function spawnItem() {
     items.push(new Item(x, -itemSize, isGood));
 }
 
+function clampPlayer() {
+    const maxX = canvas.width - playerWidth; // logical width (800)
+    playerX = Math.max(0, Math.min(maxX, playerX));
+}
 function gameLoop() {
     if (!gameActive) return;
     
@@ -238,6 +246,8 @@ function gameLoop() {
     if (rightPressed && playerX < canvas.width - playerWidth) {
         playerX += playerSpeed;
     }
+
+    clampPlayer();
     
     // Draw player
     if (window.playerImg) {
