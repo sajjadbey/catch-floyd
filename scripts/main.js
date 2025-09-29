@@ -206,7 +206,7 @@ rightBtn.addEventListener('touchend', (e) => {
 function startGame() {
     gameActive = true;
     score = 0;
-    lives = 3;
+    lives = 1;
     items = [];
     playerX = canvas.width / 2;
     updateScore();
